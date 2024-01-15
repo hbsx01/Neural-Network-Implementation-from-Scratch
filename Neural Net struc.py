@@ -236,3 +236,43 @@ net.add_layer(input_layer)
 net.add_layer(h1)
 net.add_layer(h2)
 net.add_layer(output_layer)
+
+
+# Train the network
+loss_history = net.learn(ds, epochs=5000);
+
+# Plot the progress of the cost
+plt.plot(loss_history);
+plt.xlabel('Epoch')
+plt.ylabel('Cost');
+
+# Sanity check, to see if output matches targets
+y = net(ds.inputs())
+print(f'Outputs:\n{y[:5,:]}')
+print(f'Targets:\n{ds.targets()[:5,:]}')
+ds.plot(labels=y)
+
+# Accuracy of our model
+def accuracy(y, t):
+    '''
+     ac = accuracy(y, t)
+     
+     Calculates the fraction of correctly classified samples.
+     A sample is classified correctly if the largest element
+     in y corresponds to where the 1 is in the target.
+     
+     Inputs:
+       y  a batch of outputs, with one sample per row
+       t  the corresponding batch of targets
+       
+     Output:
+       ac the fraction of correct classifications (0<=ac<=1)
+    '''
+    true_class = np.argmax(t, axis=1)       # vector of indices for true class
+    estimated_class = np.argmax(y, axis=1)  # vector of indices for estimated class
+    errors = sum(true_class==estimated_class)  # add up how many times they match
+    acc = errors / len(ds)    # divide by the total number of samples
+    return acc
+
+ac = accuracy(net(ds.inputs()), ds.targets())
+print(f"Your model's training accuracy = {ac*100}%")
